@@ -1,6 +1,58 @@
-type Gravatar @entity {
+type CaseStakingPool @entity {
   id: ID!
-  owner: Bytes!
-  displayName: String!
-  imageUrl: String!
+  mintedCaseTokens: BigDecimal!
+  stakeAmount: BigDecimal!
+  totalWithdrawnStakeReward: BigDecimal!
+  caseTokenAddress: String!
+}
+
+type CaseUser @entity {
+  id: ID!
+  address: String!
+  referrer: CaseUser
+  rank: BigInt!
+  careerValue: BigDecimal!
+  totalCaseCommissionReceived: BigDecimal!
+  referredUsers: [CaseUser!]! @derivedFrom(field: "referrer")
+  referLevelUserCounts: [BigInt!]!
+  referLevelCaseCommissions: [BigDecimal!]!
+  stakeAmount: BigDecimal!
+  totalStakeReward: BigDecimal!
+  totalWithdrawnStakeReward: BigDecimal!
+  avgAPY: BigDecimal!
+  stakeList: [CaseStakeEntry!]!
+  stakeActivityHistory: [CaseActivity!]! @derivedFrom(field: "user")
+  commissionHistory: [CaseCommission!]! @derivedFrom(field: "recipient")
+}
+
+type CaseStakeEntry @entity {
+  id: ID!
+  idx: BigInt!
+  staker: CaseUser!
+  stakeAmount: BigDecimal!
+  interestAmount: BigDecimal!
+  withdrawnInterestAmount: BigDecimal!
+  stakeTimestamp: BigInt!
+  stakeTimeInDays: BigInt!
+  apy: BigDecimal!
+  active: Boolean!
+}
+
+type CaseActivity @entity {
+  id: ID!
+  user: CaseUser!
+  type: String!
+  timestamp: BigInt!
+  txAmount: BigDecimal!
+  txHash: String!
+}
+
+type CaseCommission @entity {
+  id: ID!
+  user: CaseUser!
+  recipient: CaseUser!
+  timestamp: BigInt!
+  txAmount: BigDecimal!
+  token: String!
+  level: BigInt!
 }

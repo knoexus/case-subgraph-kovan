@@ -1,27 +1,65 @@
 specVersion: 0.0.2
-description: Gravatar for Ethereum
-repository: https://github.com/graphprotocol/example-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Gravity
-    network: mainnet
+    name: CaseReward
+    network: kovan
     source:
-      address: '0x2E645469f354BB4F5c8a05B3b30A929361cf77eC'
-      abi: Gravity
+      address: '0xCd24F83c9C67EB9beCFa076F08EAD75BC4450e0e'
+      abi: CaseReward
+      startBlock: 26399391
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        - Gravatar
+        - CaseUser
+        - CaseStakeEntry
+        - CaseActivity
       abis:
-        - name: Gravity
-          file: ./abis/Gravity.json
+        - name: CaseReward
+          file: ./abis/CaseReward.json
+        - name: CaseStaking
+          file: ./abis/CaseStaking.json
       eventHandlers:
-        - event: NewGravatar(uint256,address,string,string)
-          handler: handleNewGravatar
-        - event: UpdatedGravatar(uint256,address,string,string)
-          handler: handleUpdatedGravatar
-      file: ./src/mapping.ts
+        - event: Register(address,address)
+          handler: handleRegister
+        - event: RankChange(address,uint256,uint256)
+          handler: handleRankChange
+        - event: PayCommission(address,address,address,uint256,uint8)
+          handler: handlePayCommission
+        - event: ChangedCareerValue(address,uint256,bool)
+          handler: handleChangedCareerValue
+      file: ./src/mappings/caseReward.ts
+  - kind: ethereum/contract
+    name: CaseStaking
+    network: kovan
+    source:
+      address: '0x3F0144c77a911dd196834a0f87D26Ad8B2CDDdba'
+      abi: CaseStaking
+      startBlock: 26399378
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - CaseStakingPool
+        - CaseUser
+        - CaseStakeEntry
+        - CaseActivity
+      abis:
+        - name: CaseReward
+          file: ./abis/CaseReward.json
+        - name: CaseStaking
+          file: ./abis/CaseStaking.json
+      eventHandlers:
+        - event: CreateStake(uint256,address,address,uint256,uint256,uint256)
+          handler: handleCreateStake
+        - event: ReceiveStakeReward(uint256,address,uint256)
+          handler: handleReceiveStakeReward
+        - event: WithdrawReward(uint256,address,uint256)
+          handler: handleWithdrawReward
+        - event: WithdrawStake(uint256,address)
+          handler: handleWithdrawStake
+      file: ./src/mappings/caseStaking.ts
